@@ -3,6 +3,9 @@ description: |
   Generates project version information based on git tag,
   number of commits from the tag and branch name.
 
+on:
+  workflow_call:
+
 outputs:
   version:
     description: |
