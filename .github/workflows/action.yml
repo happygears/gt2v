@@ -1,4 +1,4 @@
-name: NSG Version
+name: Git Tag Based Build Version
 description: |
   Generates project version information based on git tag,
   number of commits from the tag and branch name.

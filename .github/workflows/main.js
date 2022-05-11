@@ -24,7 +24,7 @@ function make_safe(value) {
 }
 
 try {
-    console.log(`Calculating NSG version for ${process.env.GITHUB_REF} (${process.env.GITHUB_SHA})`)
+    console.log(`Calculating version for ${process.env.GITHUB_REF} (${process.env.GITHUB_SHA})`)
     debug(`git commit ${process.env.GITHUB_SHA}`)
     debug(`git ref ${process.env.GITHUB_REF}`)
 
@@ -118,7 +118,7 @@ try {
             setOutput("git_describe", git_describe)
             setOutput("long_version", long_version)
 
-            console.log(`NSG Version is "${long_version}"`)
+            console.log(`Version is "${long_version}"`)
         })
     })
 } catch (error) {
