@@ -84,6 +84,8 @@ jobs:
       git_describe: ${{ steps.gt2v.outputs.git_describe }}
       git_describe_object_id: ${{ steps.gt2v.outputs.git_describe_object_id }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Define build version
         id: gt2v
         uses: happygears/gt2v/./.github/workflows/version@v1
