@@ -88,4 +88,4 @@ jobs:
         uses: actions/checkout@v2
       - name: Define build version
         id: gt2v
-        uses: ./.github/workflows/version
+        uses: happygears/gt2v/./.github/workflows/version
