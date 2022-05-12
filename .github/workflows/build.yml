@@ -7,19 +7,19 @@ on:
         Short Version
 
         Example: 1.0.1
-      value: ${{ jobs.define-build-version.outputs.version }}
+      value: ${{ jobs.build-version.outputs.version }}
 
     is_release_branch:
       description: True if this is a release branch
-      value: ${{ jobs.define-build-version.outputs.is_release_branch }}
+      value: ${{ jobs.build-version.outputs.is_release_branch }}
 
     is_development_branch:
       description: True if this is a development branch
-      value: ${{ jobs.define-build-version.outputs.is_development_branch }}
+      value: ${{ jobs.build-version.outputs.is_development_branch }}
 
     is_feature_branch_or_pr:
       description: True if this is a feature branch or pull request
-      value: ${{ jobs.define-build-version.outputs.is_feature_branch_or_pr }}
+      value: ${{ jobs.build-version.outputs.is_feature_branch_or_pr }}
 
     long_version:
       description: |
@@ -31,44 +31,59 @@ on:
           - 123 - number of commits made after the tag was set
           - abcd - Short commit ID
           - feature-NET-1522 - name of the git branch "feature/NET-1522"
-      value: ${{ jobs.define-build-version.outputs.long_version }}
+      value: ${{ jobs.build-version.outputs.long_version }}
 
     git_branch:
       description: Git branch
-      value: ${{ jobs.define-build-version.outputs.git_branch }}
+      value: ${{ jobs.build-version.outputs.git_branch }}
 
     git_branch_safe:
       description: Git branch with "/" replaced with "-"
-      value: ${{ jobs.define-build-version.outputs.git_branch_safe }}
+      value: ${{ jobs.build-version.outputs.git_branch_safe }}
 
     git_commit:
       description: Git commit ID
-      value: ${{ jobs.define-build-version.outputs.git_commit }}
+      value: ${{ jobs.build-version.outputs.git_commit }}
 
     git_tag:
       description: Git tag
-      value: ${{ jobs.define-build-version.outputs.git_tag }}
+      value: ${{ jobs.build-version.outputs.git_tag }}
 
     git_commits_since_tag:
       description: Number of commits since the tag's commit ID
-      value: ${{ jobs.define-build-version.outputs.git_commits_since_tag }}
+      value: ${{ jobs.build-version.outputs.git_commits_since_tag }}
 
     git_describe:
       description: Get describe output
-      value: ${{ jobs.define-build-version.outputs.git_describe }}
+      value: ${{ jobs.build-version.outputs.git_describe }}
 
     git_describe_object_id:
       description: |
         The git describe object ID. This is a short version of the commit.
         The length is the minimum needed to make the entire `git_describe` string unique.
-      value: ${{ jobs.define-build-version.outputs.git_describe_object_id }}
+      value: ${{ jobs.build-version.outputs.git_describe_object_id }}
 
 jobs:
-  define-build-version:
+  build-version:
     name: Define build version
     runs-on: ubuntu-latest
+    # Map the job outputs to step outputs
+    outputs:
+      version: ${{ steps.gt2v.outputs.version }}
+      is_release_branch: ${{ steps.gt2v.outputs.is_release_branch }}
+      is_development_branch: ${{ steps.gt2v.outputs.is_development_branch }}
+      is_feature_branch_or_pr: ${{ steps.gt2v.outputs.is_feature_branch_or_pr }}
+      long_version: ${{ steps.gt2v.outputs.long_version }}
+      git_branch: ${{ steps.gt2v.outputs.git_branch }}
+      git_branch_safe: ${{ steps.gt2v.outputs.git_branch_safe }}
+      git_commit: ${{ steps.gt2v.outputs.git_commit }}
+      git_tag: ${{ steps.gt2v.outputs.git_tag }}
+      git_commits_since_tag: ${{ steps.gt2v.outputs.git_commits_since_tag }}
+      git_describe: ${{ steps.gt2v.outputs.git_describe }}
+      git_describe_object_id: ${{ steps.gt2v.outputs.git_describe_object_id }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Define build version
+        id: gt2v
         uses: ./.github/workflows/version
