@@ -1,7 +1,4 @@
-name: Git Tag Based Build Version
-description: |
-  Generates project version information based on git tag,
-  number of commits from the tag and branch name.
+name: Build Version Composer
 
 on:
   workflow_call:
@@ -54,6 +51,12 @@ on:
         description: |
           The git describe object ID. This is a short version of the commit.
           The length is the minimum needed to make the entire `git_describe` string unique.
-    runs:
-      using: 'node12'
-      main: 'main.js'
+
+jobs:
+  define_build_version:
+    name: Define build version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Define build Version
+        id: version
+        uses: ./.github/actions/version
