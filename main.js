@@ -79,7 +79,7 @@ try {
         if (shallow) {
             cmd += " --unshallow"
         }
-        cmd += " && git fetch -q --all --tags && git describe --tags --abbrev=1 --long"
+        cmd += " && git fetch -q --all --tags -f && git describe --tags --abbrev=1 --long"
 
         debug(`Executing: ${cmd}`)
 
