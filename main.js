@@ -1,7 +1,6 @@
 const { exec } = require('child_process')
 
 function setOutput(key, value) {
-    console.log(`Set ${key}=${value}`)
     console.log(`"${key}=${value}" >> $GITHUB_OUTPUT`)
 }
 
