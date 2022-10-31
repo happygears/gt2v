@@ -53,5 +53,5 @@ outputs:
       The git describe object ID. This is a short version of the commit.
       The length is the minimum needed to make the entire `git_describe` string unique.
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'main.js'
