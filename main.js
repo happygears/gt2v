@@ -1,7 +1,9 @@
 const { exec } = require('child_process')
+const { core } = require('@actions/core');
 
 function setOutput(key, value) {
-    console.log(`"${key}=${value}" >> $GITHUB_OUTPUT`)
+    console.log(`${key}=${value}`)
+    core.setOutput(key, value)
 }
 
 function error(message) {
