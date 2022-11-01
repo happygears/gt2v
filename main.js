@@ -1,5 +1,5 @@
 const { exec } = require('child_process')
-const { core } = require('@actions/core');
+const core = require('@actions/core');
 
 function setOutput(key, value) {
     console.log(`${key}=${value}`)
