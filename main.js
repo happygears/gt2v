@@ -84,7 +84,7 @@ try {
 
         debug(`Executing: ${cmd}`)
 
-        exec(cmd, (err, output, stderr) => {
+        exec(cmd, { timeout: 30000 }, (err, output, stderr) => {
             if (err) {
                 error(`Unable to find an earlier tag.\n${stderr}`)
                 return process.exit(1)
