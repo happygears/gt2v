@@ -59,7 +59,7 @@ try {
     setOutput("git_branch", git_branch)
     setOutput("git_branch_safe", git_branch_safe)
 
-    let cmd = "git fetch --depth=1 origin +refs/tags/*:refs/tags/* && git describe --tags --abbrev=1 --long"
+    let cmd = "git fetch -q --depth=1 origin +refs/tags/*:refs/tags/* && git describe --tags --abbrev=1 --long"
 
     debug(`Executing: ${cmd}`)
 
