@@ -59,67 +59,64 @@ try {
     setOutput("git_branch", git_branch)
     setOutput("git_branch_safe", git_branch_safe)
 
-    // test if it is a shallow repository
-    let shallow = true
-    debug(`Executing: 'git rev-parse --is-shallow-repository'`)
-    exec("git rev-parse --is-shallow-repository", (err, output, stderr) => {
+    exec("git ls-remote --refs --tags origin \"refs/tags/*\" | tail --lines=1", (err, output, stderr) => {
         if (err) {
-            error(`Failed to execute 'git rev-parse --is-shallow-repository'.\n${stderr}`)
-            return process.exit(2)
+            error(`Unable to find an earlier tag\n${stderr}`)
+            return process.exit(1)
         }
+        const git_ref_tag = output.trim()
+        debug(`git ls-remote output: ${git_ref_tag}`)
 
-        const git_is_shallow = output.trim().toLowerCase()
-        debug(`Is shallow: ${git_is_shallow}`)
-        if (git_is_shallow === "false") {
-            shallow = false
-            debug(`shallow = false`)
-        }
+        const parts = git_ref_tag.split("\t")
+        // Remove "v" prefix if it exits
+        const last_ref = parts[0]
+        const last_tag = parts[1]
 
-        debug(`shallow = ${shallow}`)
-        let cmd = "git fetch -q --prune"
-        if (shallow) {
-            cmd += " --unshallow"
-        }
-        cmd += " && git fetch -q --all --tags -f && git describe --tags --abbrev=1 --long"
-
-        debug(`Executing: ${cmd}`)
-
-        exec(cmd, (err, output, stderr) => {
+        exec(`git fetch -q --depth=1 origin +${last_tag}:${last_tag}`, (err, output, stderr) => {
             if (err) {
-                error(`Unable to find an earlier tag.\n${stderr}`)
+                error(`Unable to fetch tag ${last_tag}\n${stderr}`)
                 return process.exit(1)
             }
-            const git_describe = output.trim()
-            debug(`git describe output: ${git_describe}`)
+            const git_fetch = output.trim()
+            debug(`git fetch output: ${git_fetch}`)
 
-            const parts = git_describe.split("-")
-            // Remove "v" prefix if it exits
-            const git_tag = parts[0].replace(/^v/, '')
-            const git_commits_since_tag = parts[1]
-            // Remove "g" prefix
-            const git_describe_object_id = parts[2].slice(1)
-
-            let long_version = `${git_tag}`
-            if ( git_commits_since_tag !== "0" ) {
-                long_version += `-${git_commits_since_tag}`
-
-                if ( is_feature_branch_or_pr ) {
-                    long_version += `-${git_describe_object_id}`
+            exec(`git describe --tags --abbrev=1 --long ${last_ref}`, (err, output, stderr) => {
+                if (err) {
+                    error(`Unable to describe ${last_ref} ${last_tag}\n${stderr}`)
+                    return process.exit(1)
                 }
-                if ( !is_release_branch && git_branch_safe !== "" ) {
-                    long_version += `-${git_branch_safe}`
+                const git_describe = output.trim()
+                debug(`git describe output: ${git_describe}`)
+
+                const parts = git_describe.split("-")
+                // Remove "v" prefix if it exits
+                const git_tag = parts[0].replace(/^v/, '')
+                const git_commits_since_tag = parts[1]
+                // Remove "g" prefix
+                const git_describe_object_id = parts[2].slice(1)
+
+                let long_version = `${git_tag}`
+                if ( git_commits_since_tag !== "0" ) {
+                    long_version += `-${git_commits_since_tag}`
+
+                    if ( is_feature_branch_or_pr ) {
+                        long_version += `-${git_describe_object_id}`
+                    }
+                    if ( !is_release_branch && git_branch_safe !== "" ) {
+                        long_version += `-${git_branch_safe}`
+                    }
                 }
-            }
 
-            setOutput("git_tag", git_tag)
-            setOutput("version", git_tag)
-            setOutput("git_commit", git_commit)
-            setOutput("git_describe_object_id", git_describe_object_id)
-            setOutput("git_commits_since_tag", git_commits_since_tag)
-            setOutput("git_describe", git_describe)
-            setOutput("long_version", long_version)
+                setOutput("git_tag", git_tag)
+                setOutput("version", git_tag)
+                setOutput("git_commit", git_commit)
+                setOutput("git_describe_object_id", git_describe_object_id)
+                setOutput("git_commits_since_tag", git_commits_since_tag)
+                setOutput("git_describe", git_describe)
+                setOutput("long_version", long_version)
 
-            console.log(`Version is "${long_version}"`)
+                console.log(`Version is "${long_version}"`)
+            })
         })
     })
 } catch (error) {
